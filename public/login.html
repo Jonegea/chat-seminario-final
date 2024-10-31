@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="je_logo_elegant.png" alt="JE Logo">
+        </div>
+        <form id="login-form" class="login-form" onsubmit="handleLogin(event)">
+            <h2>Iniciar Sesión</h2>
+            <div class="form-group">
+                <label for="fullname">Usuario</label>
+                <input type="text" id="fullname" name="fullname" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" >
+            </div>
+            <button type="submit">Ingresar</button>
+        </form>
+        <div class="register-link">
+            <p>Si no tienes una cuenta, <a href="registro.html">regístrate aquí</a>.</p>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+
+            // Obtén los valores de los campos
+            const fullname = document.getElementById('fullname').value;
+            const password = document.getElementById('password').value;
+
+            // Enviar los datos al servidor
+            fetch("http://localhost:3000/loginUsuario", { // Asegúrate de que esta URL coincida con tu ruta en el servidor
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fullname: fullname,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = "chat.html"
+                // Aquí puedes manejar la respuesta del servidor
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
