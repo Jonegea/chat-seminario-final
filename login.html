@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="je_logo_elegant.png" alt="JE Logo">
+        </div>
+        <form id="login-form" class="login-form" onsubmit="handleLogin(event)">
+            <h2>Iniciar Sesión</h2>
+            <div class="form-group">
+                <label for="fullname">Usuario</label>
+                <input type="text" id="fullname" name="fullname" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <button type="submit">Enviar Código SMS</button>
+        </form>
+
+        <form id="verification-form" class="verification-form" onsubmit="handleVerification(event)" style="display: none;">
+            <h2>Verificación SMS</h2>
+            <div class="form-group">
+                <label for="smsCode">Código de Validación</label>
+                <input type="text" id="smsCode" name="smsCode" required>
+            </div>
+            <button type="submit">Verificar Código</button>
+        </form>
+
+        <div class="register-link">
+            <p>Si no tienes una cuenta, <a href="registro.html">regístrate aquí</a>.</p>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const fullname = document.getElementById('fullname').value;
+            const password = document.getElementById('password').value;
+
+            fetch("http://localhost:3000/loginUsuario", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ fullname: fullname, password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // Si la autenticación inicial es correcta, muestra el formulario de verificación
+                if (data.success) {
+                    document.getElementById('login-form').style.display = 'none';
+                    document.getElementById('verification-form').style.display = 'block';
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function handleVerification(event) {
+            event.preventDefault();
+
+            const smsCode = document.getElementById('smsCode').value;
+
+            fetch("http://localhost:3000/verifyCode", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code: smsCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Verification Success:', data);
+                if (data.verified) {
+                    window.location.href = "chat.html"; // Redirigir al chat si la verificación es correcta
+                } else {
+                    alert('Código de validación incorrecto. Inténtalo de nuevo.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
